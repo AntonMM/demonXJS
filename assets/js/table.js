@@ -1,77 +1,118 @@
 // Antonio M. Mérida
 // mail: antonio_morero79@hotmail.com
 
-// variables GLOBALES
-var listArray = Array(); // declaracion del array que contienen los juegos.
-var contPage = 30; // contenido de los datos para paginar, limitado a 30 datos por pagina.
+var current_page = 0;
+var records_per_page = 2;
 
-$(function() {
+// addEventListener in HTML
+document.getElementById("btn_next").addEventListener('click', nextPage, false); // next page
+document.getElementById("btn_prev").addEventListener('click', prevPage, false); // return page
 
-    $("#count").html("<img src='img/ajax-loader.gif'>"); // Mientras se carga
-    // El método ajax recibe los datos
-    $.ajax({
-        url: ajaxList,
-        type: "GET",
-        dataType: "json",
-        // Si se produce correctamente, funcionara la función
-        success: function (resultsAjax) {
-            // contador de juegos
-            cont = resultsAjax.results.length;
-            // mensaje del contenido de los juegos que existe en el JSON indicado.
-            $("#count").html("<div class='alert alert-info' role='alert'><strong>Contador de juegos.</strong> Se han detectado <strong>" + 
-                cont + "</strong> juegos de <strong>" + resultsAjax.consola + ".</strong>");
-            
-            var game; // variable de juegos
-            // se llenan de datos el array
-            for (var i=0; i < cont; i++) {
-                gamesArray[i] = resultsAjax.results[i].titulosJuegos + "::" + 
-                resultsAjax.results[i].publicaciones + "::" +
-                resultsAjax.results[i].desarrolladores;                  
-            };
-
-            // creacion de  elmento de la tabla
-            $("#listGames").append("<table class='table' id='tableGames'><thead><tr><th>#</th><th>Nombre del juego</th><th>Compañia</th></tr></thead><tbody>");
-            var i = 0; // indice
-            var game = Array(); // array para cada apartado de cada juego.
-
-            paginator(gamesArray, 30);
-
-            // finalizacion de elemento de la tabla.
-            $("#listGames").append("</tbody></table>");
-           
-            
-
-        },
-        // Si la petición falla
-        error: function (xhr, estado, error_producido) {
-            console.log("Error producido: " + error_producido);
-            console.log("Estado: " + estado);
-        },
-        //Tanto si falla como si funciona como sino funciona.
-        complete: function (xhr, estado) {
-            console.log("Peticion completa");
-        }
-    });
-
-
-    $("#listGames").click(function () {
-        // alert(document.getElementsByTagName("li")[1].innerHTML);
-        alert(document.getElementById("page-1").innerHTML);
-    });
-
-
-});
-
-function paginator(listGames, indexLimit) {
-    // calculo de paginas que tendrá.
-    var page = Math.round(listGames.length / contPage);
-    var i = 0;
-    while(i < indexLimit) {
-        game = listGames[i].split("::"); // separacion del contenido.
-        $("#tableGames").append("<tr><th scope='row'>"+(i+1)+"</th><td>"+game[0]+"</td><td>"+game[1]+"</td>");
-        i++; 
+// variable example
+var objJson = [
+    {
+        "titulosJuegos": "2020 Super Baseball",
+        // "publicaciones": "SNK",
+        "desarrolladores": "1993"
+    },
+    {
+        "titulosJuegos": "3 Ninjas Kick Back",
+        // "publicaciones": "Sony ImageSoft",
+        "desarrolladores": "1994"
+    },
+    {
+        "titulosJuegos": "3x3 Eyes - Juuma Houkan",
+        // "publicaciones": "Banpresto",
+        "desarrolladores": "1995"
+    },
+    {
+        "titulosJuegos": "3x3 Eyes - Seima Kourinden",
+        // "publicaciones": "Yutaka",
+        "desarrolladores": "1995"
+    },
+    {
+        "titulosJuegos": "'96 Zenkoku Koukou Soccer Senshuken",
+        // "publicaciones": "Mahou",
+        "desarrolladores": "22 de marzo de 1996 (Sólo Japón)"
+    },
+    {
+        "titulosJuegos": "7th Saga",
+        // "publicaciones": "Enix",
+        "desarrolladores": "Septiembre de 1993"
+    },
+    {
+        "titulosJuegos": "90 Minutes - European Prime Goal",
+       // "publicaciones": "Namco",
+        "desarrolladores": "1995 (Sólo Europa)"
+    },
+    {
+        "titulosJuegos": "Aaahh!!! Real Monsters",
+        // "publicaciones": "Majesco",
+        "desarrolladores": "Noviembre de 1995"
     }
-    // elementos HTML de paginacion.
-    $("#listGames").append("<nav aria-label='...'><ul class='pagination pagination-lg'><li class='page-item disabled'><a class='page-link' id='page-1' href='#' tabindex='-1'>Previous</a></li><li class='page-item'><a class='page-link' href='#'>1</a></li><li class='page-item'><a class='page-link' href='#'>2</a></li><li class='page-item'><a class='page-link' href='#'>3</a></li><li class='page-item'><a class='page-link' href='#'>Next</a></li></ul></nav>");
+]; // Can be obtained from another source, such as your objJson variable
 
+function prevPage()
+{
+    if (current_page > 1) {
+        current_page--;
+        if (current_page == document.getElementById("page").innerText) {
+            current_page--;
+        }
+        changePage(current_page);
+    }
 }
+
+function nextPage()
+{
+    if (current_page < numPages()) {
+        current_page++;
+        if (current_page == document.getElementById("page").innerText) {
+            current_page++;
+        }
+        changePage(current_page);
+
+    }
+}
+    
+function changePage(page)
+{
+    var btn_next = document.getElementById("btn_next");
+    var btn_prev = document.getElementById("btn_prev");
+    var listing_table = document.getElementById("listingTable");
+    var page_span = document.getElementById("page");
+ 
+    // Validate page
+    if (page < 1) page = 1;
+    if (page > numPages()) page = numPages();
+
+    listing_table.innerHTML = "";
+
+    for (var i = (page-1) * records_per_page; i < (page * records_per_page); i++) {
+        listing_table.innerHTML += objJson[i].titulosJuegos + "<br>";        
+    }
+
+
+    page_span.innerHTML = page;
+
+    if (page == 1) {
+        btn_prev.style.visibility = "hidden";
+    } else {
+        btn_prev.style.visibility = "visible";
+    }
+
+    if (page == numPages()) {
+        btn_next.style.visibility = "hidden";
+    } else {
+        btn_next.style.visibility = "visible";
+    }
+}
+
+function numPages()
+{
+    return Math.ceil(objJson.length / records_per_page);
+}
+
+window.onload = function() {
+    changePage(1);
+};
