@@ -1,5 +1,6 @@
+// Version Testing
 // Antonio M. Mérida
-// mail: antonio_morero79@hotmail.com
+// 2017
 
 var current_page = 0;
 var records_per_page = 2;
