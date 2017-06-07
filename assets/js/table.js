@@ -71,3 +71,9 @@ function numPages(num) {
     return Math.ceil(num / forPage);
 }
 
+// expresion regular para sacar fecha tipo 1996, etc.
+function regex(expre) {
+    var regex = /.(\d{4})/ig
+    var result = regex.exec(expre);
+    alert(result[0]);
+}
