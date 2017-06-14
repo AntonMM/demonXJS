@@ -27,7 +27,7 @@ $(function() {
                 resultAjax.results[i].desarrolladores;
             }
             // mostará los datos del array, desde el comienzo en "1".
-            mostrarDatos(dataActual, forPage, 1);
+            mostrarDatos(forPage, 1);
 
             // regex(ajaxArray[7]);
 
@@ -44,10 +44,10 @@ $(function() {
     });
 })
 
-function mostrarDatos(dataActual, limitPage, page) {
+function mostrarDatos(limitPage, page) {
     var data = Array();
     
-    for(dataActual; dataActual < limitPage; dataActual++) {
+    for(dataActual < limitPage; dataActual++) {
         data = ajaxArray[dataActual].split("::");
         $("#listingTable").append(data[0] + " >> " + data[1] + " >> " + data[2] + "</br>");
     }
