@@ -1,19 +1,25 @@
-// prueba de examen "Test 1"
+// Script pagination with ajax.
+// version 0.30
 
 var urlJson = "http://localhost/workProject/demonXJS/libs/listGames/snes/snes.json";
 var ajaxArray = Array();
 var numPage = 1; // variable para mostrar el numero de la pagina actual.
+var forPage = 22; // variable para mostrar un numero de elementos por pagina.
 
 $(function() {
-    var forPage = 12; // varaible para mostrar un numero de elementos por pagina.
-    var dataActual = 0; // variable de elemento actual.
-
+    // click event.
     $("#btn_next").click(function() {
-        mostrarDatos(dataActual, forPage, numPage+=1);
+        if (numPage < numPages(ajaxArray.length)) {
+            mostrarDatos(forPage, numPage+=1);
+            $("#page").html(numPage);
+        }
     });
 
     $("#btn_prev").click(function() {
-        mostrarDatos(dataActual, forPage, numPage-=1);
+        if (numPage > 1) {
+            mostrarDatos(forPage, numPage-=1);
+            $("#page").html(numPage);
+        }
     }); 
 
     $.ajax({
@@ -28,8 +34,8 @@ $(function() {
             }
             // mostará los datos del array, desde el comienzo en "1".
             mostrarDatos(forPage, 1);
-
-            // regex(ajaxArray[7]);
+            // mostrar numero de la primera pagina.
+            $("#page").html(numPage);
 
         },
             // Si la petición falla
@@ -44,26 +50,18 @@ $(function() {
     });
 })
 
-function mostrarDatos(limitPage, page) {
+function mostrarDatos(forPage, page) {
     var data = Array();
-    
-    for(dataActual < limitPage; dataActual++) {
-        data = ajaxArray[dataActual].split("::");
-        $("#listingTable").append(data[0] + " >> " + data[1] + " >> " + data[2] + "</br>");
+    var limitForPage = page * forPage; // limite en cada pagina
+    var indexElement = limitForPage - forPage; // indice en cada pagina 
+    // clear HTML.
+    $("#listingTable").html("");
+    for(indexElement; indexElement <= limitForPage; indexElement++) {
+            if (indexElement < ajaxArray.length) {
+                data = ajaxArray[indexElement].split("::");
+                $("#listingTable").append(data[0] + " >> " + data[1] + " >> " + data[2] + "</br>");
+            }
     }
-    // al llegar al minimo.
-    if (numPage < 1) {
-        numPage = 1;
-        page = 1;
-    }
-    // a llegar al maximo.
-    if (numPage > ajaxArray.length) {
-        numPage = ajaxArray.length;
-        page = ajaxArray.length;        
-    }
-
-    $("#page").html(page);
-
 }
 
 // funcion numero de paginas
